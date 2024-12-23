@@ -189,7 +189,7 @@
             <li><a href="agents" class="{{ Request::is('agents*') ? 'active' : '' }}"><i class="bi bi-people"></i> Agen</a></li>
             <li><a href="categories" class="{{ Request::is('categories*') ? 'active' : '' }}"><i class="bi bi-tag"></i> Kategori</a></li>
             <li><a href="transactions" class="{{ Request::is('transactions*') ? 'active' : '' }}"><i class="bi bi-basket"></i> Transaksi</a></li>
-            <li><a href="" class="{{ Request::is('reports*') ? 'active' : '' }}"><i class="bi bi-file-earmark-text"></i> Laporan</a></li>
+            <li><a href="e" class="{{ Request::is('reports*') ? 'active' : '' }}"><i class="bi bi-file-earmark-text"></i> Laporan</a></li>
             <li><a href="accounts" class="{{ Request::is('accounts*') ? 'active' : '' }}"><i class="bi bi-person-plus"></i> Tambah Akun</a></li>
         </ul>
 

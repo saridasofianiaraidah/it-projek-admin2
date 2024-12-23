@@ -36,3 +36,5 @@ Route::middleware('auth')->group(function () {
 Route::post('/items/store', [ItemController::class, 'store'])->name('items.store');
 Route::post('/categories/store', [CategoryController::class, 'store'])->name('categories.store');
 
+// routes/web.php
+Route::post('/save-transaction-image', [TransactionController::class, 'saveImage'])->name('save.transaction.image');

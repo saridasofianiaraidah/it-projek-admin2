@@ -22,33 +22,53 @@
             <a href="{{ route('transactions.index') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
-                <button class="btn btn-primary" id="share-btn">
-                    <i class="fab fa-whatsapp"></i> Bagikan
-                </button>
-            </div>
+            <button class="btn btn-primary" id="share-btn">
+                <i class="fab fa-whatsapp"></i> Bagikan
+            </button>
         </div>
     </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-    
-    document.getElementById('share-btn').addEventListener('click', function() {
-        html2canvas(document.querySelector('#transaction-detail')).then(canvas => {
-            // Mengunduh gambar secara otomatis
-            const link = document.createElement('a');
-            link.download = 'transaction-detail.jpg';
-            link.href = canvas.toDataURL('image/jpeg');
-            link.click();
+    document.getElementById('share-btn').addEventListener('click', function () {
+        const button = this;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Membuat Gambar...';
+        button.disabled = true;
 
-            // Memberikan instruksi untuk membagikan gambar secara manual
-            setTimeout(() => {
-                const whatsappUrl = `https://api.whatsapp.com/send?text=Detail%20transaksi%20telah%20diunduh%20sebagai%20gambar.%20Silakan%20unggah%20gambar%20ke%20WhatsApp%20secara%20manual.`;
-                window.open(whatsappUrl, '_blank');
-            }, 1000); // Tunggu unduhan selesai sebelum membuka WhatsApp
+        html2canvas(document.querySelector('#transaction-detail')).then(canvas => {
+            const imageData = canvas.toDataURL('image/jpeg');
+
+            // Kirim gambar ke server
+            fetch('{{ route("save.transaction.image") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ image: imageData })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const whatsappUrl = `https://api.whatsapp.com/send?text=Detail%20transaksi:%0A- Nama%20Agen:%20{{ urlencode($transaction->agent->nama) }}%0A- Nama%20Barang:%20{{ urlencode($transaction->item->nama_barang) }}%0A- Total%20Harga:%20Rp%20{{ number_format($transaction->total_price, 0, ',', '.') }}%0A%0AKlik%20tautan%20untuk%20melihat%20gambar:%0A${data.url}`;
+                    window.open(whatsappUrl, '_blank');
+
+                    button.innerHTML = '<i class="fab fa-whatsapp"></i> Bagikan';
+                    button.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error saat menyimpan gambar:', error);
+                    alert('Terjadi kesalahan saat menyimpan gambar. Silakan coba lagi.');
+                    button.innerHTML = '<i class="fab fa-whatsapp"></i> Bagikan';
+                    button.disabled = false;
+                });
         }).catch(error => {
-            console.error('Error saat membagikan gambar:', error);
+            console.error('Error saat membuat gambar:', error);
+            alert('Terjadi kesalahan saat membuat gambar. Silakan coba lagi.');
+            button.innerHTML = '<i class="fab fa-whatsapp"></i> Bagikan';
+            button.disabled = false;
         });
     });
 </script>
+
 @endsection

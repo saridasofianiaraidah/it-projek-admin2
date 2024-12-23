@@ -54,7 +54,7 @@ class TransactionController extends Controller
             'total_price' => $totalPrice,
             'payment_method' => $validated['payment_method'],
             'purchase_date' => now(),
-        ]);
+        ]);         
 
         return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil ditambahkan.');
     }
@@ -109,4 +109,21 @@ class TransactionController extends Controller
         $transaction = Transactions::with('agent', 'item.category')->findOrFail($id);
         return view('transactions.show', compact('transaction'));
     }
+
+    
+public function saveImage(Request $request)
+{
+    $imageData = $request->input('image');
+    $imageName = 'transaction_' . time() . '.jpg';
+    $path = public_path('images/transactions/' . $imageName);
+
+    // Simpan gambar
+    $image = str_replace('data:image/jpeg;base64,', '', $imageData);
+    $image = str_replace(' ', '+', $image);
+    file_put_contents($path, base64_decode($image));
+
+    // Kembalikan URL gambar
+    return response()->json(['url' => asset('images/transactions/' . $imageName)]);
+}
+
 }

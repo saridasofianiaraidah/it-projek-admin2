@@ -35,7 +35,7 @@
                         @endif
                     </td>
                     <td>{{ $item->nama_barang }}</td>
-                    <td>{{ $item->category->name ?? 'tidak ada kategori'}}</td>
+                    <td>{{ $item->category->name ?? 'tidak ada kategori' }}</td>
                     <td>Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
                     <td>{{ $item->jumlah }}</td>
                     <td>
@@ -52,8 +52,30 @@
     </table>
 </div>
 
+<!-- Modal Pop-Up Berhasil Login -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4" style="border: none; background-color: transparent;">
+            <!-- Card Putih -->
+            <div class="card shadow-lg p-4" style="border-radius: 20px; background-color: white;">
+                <div class="card-body d-flex justify-content-center align-items-center flex-column">
+                    <!-- Ikon Lingkaran dengan Margin -->
+                    <div class="circle-container mb-3">
+                        <div class="circle-success">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="#ffffff" viewBox="0 0 16 16">
+                                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05L7.477 10.528a.75.75 0 0 1-1.08.02L4.384 8.634a.75.75 0 0 1 1.068-1.05l1.609 1.607 3.908-4.217z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <!-- Teks -->
+                    <h4 class="text-success mb-2" style="font-weight: bold;">Berhasil Login</h4>
+                    <p class="text-secondary">Selamat datang di <strong>TOKO YULIA</strong>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
-    // Menghilangkan notifikasi setelah 5 detik
     window.onload = function() {
         var alert = document.getElementById('success-alert');
         if (alert) {

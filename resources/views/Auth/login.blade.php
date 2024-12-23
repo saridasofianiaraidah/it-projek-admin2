@@ -95,29 +95,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Modal Pop-Up Sukses -->
-   <!-- Modal Pop-Up Berhasil Login -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-center p-4" style="border: 3px solid #ffffff; border-radius: 10px;">
-            <div class="modal-body">
-                <!-- Ikon centang -->
-                <div class="mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="#145b3b" viewBox="0 0 16 16">
-                        <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05L7.477 10.528a.75.75 0 0 1-1.08.02L4.384 8.634a.75.75 0 0 1 1.068-1.05l1.609 1.607 3.908-4.217z"/>
-                    </svg>
-                </div>
-                <!-- Teks berhasil login -->
-                <h4 class="text-success mb-3" style="font-weight: bold;">Berhasil Login</h4>
-                <p>Selamat datang di aplikasi <strong>TOKO YULIA</strong>.</p>
-                <!-- Tombol tutup -->
-                <button type="button" class="btn btn-success w-100 mt-3" data-bs-dismiss="modal">Lanjutkan</button>
-            </div>
-        </div>
-    </div>
-</div>
-
    
 
     <!-- Optional JavaScript -->
