@@ -185,7 +185,7 @@
 
         <!-- Sidebar Menu Items -->
         <ul class="menu-item">
-            <li><a href="items" class="{{ Request::is('items*') ? 'active' : '' }}"><i class="bi bi-box"></i> Cek Barang</a></li>
+            <li><a href="items" class="{{ Request::is('items*') ? 'active' : '' }}"><i class="bi bi-box"></i> Kelola Barang</a></li>
             <li><a href="agents" class="{{ Request::is('agents*') ? 'active' : '' }}"><i class="bi bi-people"></i> Agen</a></li>
             <li><a href="categories" class="{{ Request::is('categories*') ? 'active' : '' }}"><i class="bi bi-tag"></i> Kategori</a></li>
             <li><a href="transactions" class="{{ Request::is('transactions*') ? 'active' : '' }}"><i class="bi bi-basket"></i> Transaksi</a></li>

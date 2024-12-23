@@ -11,6 +11,7 @@
         <tr>
             <th>No</th>
             <th>Nama Agen</th>
+            <th>Gambar</th>
             <th>Nama Barang</th>
             <th>Kategori</th>
             <th>Jumlah</th>
@@ -18,7 +19,6 @@
             <th>Diskon (%)</th>
             <th>Total Harga</th>
             <th>Metode Pembayaran</th>
-            
             <th>Aksi</th>
         </tr>
        </thead>
@@ -27,22 +27,27 @@
         <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $transaction->agent->nama }}</td>
+            <td>
+                @if ($transaction->gambar)
+                    <img src="{{ asset('storage/' . $transaction->gambar) }}" alt="{{ $transaction->item->nama_barang }}" width="50">
+                @else
+                    <img src="{{ asset('images/default.png') }}" alt="default" width="50">
+                @endif
+            </td>
             <td>{{ $transaction->item->nama_barang }}</td>
-            <td>{{ $transaction->item->category->name ?? '' }}</td> <!-- Perbaikan di sini -->
+            <td>{{ $transaction->item->category->name ?? '' }}</td>
             <td>{{ $transaction->quantity }}</td>
             <td>Rp {{ number_format($transaction->unit_price, 0, ',', '.') }}</td>
             <td>{{ $transaction->discount }}%</td>
             <td>Rp {{ number_format($transaction->total_price, 0, ',', '.') }}</td>
             <td>{{ ucfirst($transaction->payment_method) }}</td>
-           
             <td>
-                <!-- Ganti tombol Edit menjadi Detail Transaksi -->
                 <a href="{{ route('transactions.show', $transaction->id) }}" class="btn btn-success d-inline-block">Detail</a>
 
-                <!-- Tombol Hapus -->
                 <form action="{{ route('transactions.destroy', $transaction->id) }}" method="POST" style="display:inline;">
                     @csrf
-                    
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus transaksi ini?')">Hapus</button>
                 </form>
             </td>
         </tr>

@@ -16,6 +16,7 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id(); // Kolom id
             $table->unsignedBigInteger('agent_id'); // Kolom agent_id
+            $table->string('gambar')->nullable();//menamplkan gambar
             $table->unsignedBigInteger('item_id'); // Kolom item_id
             $table->integer('quantity'); // Kolom quantity
             $table->decimal('unit_price', 8, 2); // Kolom unit_price

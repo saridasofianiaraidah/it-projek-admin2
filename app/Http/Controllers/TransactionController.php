@@ -6,12 +6,13 @@ use App\Models\Item;
 use App\Models\Category;
 use App\Models\Transactions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller
 {
     public function index()
     {
-        $transactions = Transactions::with('agent', 'item.category')->get();
+        $transactions = Transactions::with(['agent', 'item.category'])->get();
         return view('transactions.index', compact('transactions'));
     }
 
@@ -26,9 +27,9 @@ class TransactionController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi input
         $validated = $request->validate([
             'agent_id' => 'required|exists:agents,id',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'item_id' => 'required|exists:items,id',
             'category_id' => 'required|exists:categories,id',
             'quantity' => 'required|integer|min:1',
@@ -37,15 +38,19 @@ class TransactionController extends Controller
             'payment_method' => 'required|in:cash,transfer',
         ]);
 
-        // Hitung total harga
         $totalPrice = $validated['quantity'] * $validated['unit_price'];
         if (!empty($validated['discount'])) {
             $totalPrice -= $totalPrice * ($validated['discount'] / 100);
         }
 
-        // Simpan transaksi
+        $imageName = null;
+        if ($request->hasFile('gambar')) {
+            $imageName = $request->file('gambar')->store('transactions', 'public');
+        }
+
         Transactions::create([
             'agent_id' => $validated['agent_id'],
+            'gambar' => $imageName,
             'item_id' => $validated['item_id'],
             'category_id' => $validated['category_id'],
             'quantity' => $validated['quantity'],
@@ -54,22 +59,27 @@ class TransactionController extends Controller
             'total_price' => $totalPrice,
             'payment_method' => $validated['payment_method'],
             'purchase_date' => now(),
-        ]);         
+        ]);
 
         return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil ditambahkan.');
     }
 
     public function storeMultiple(Request $request)
     {
-        // Validasi input
         $validated = $request->validate([
             'agent_id' => 'required|exists:agents,id',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'payment_method' => 'required|in:cash,transfer',
             'item_id.*' => 'required|exists:items,id',
             'quantity.*' => 'required|integer|min:1',
             'unit_price.*' => 'required|numeric|min:0',
             'discount.*' => 'nullable|numeric|min:0|max:100',
         ]);
+
+        $imageName = null;
+        if ($request->hasFile('gambar')) {
+            $imageName = $request->file('gambar')->store('transactions', 'public');
+        }
 
         foreach ($validated['item_id'] as $index => $itemId) {
             $quantity = $validated['quantity'][$index];
@@ -83,6 +93,7 @@ class TransactionController extends Controller
 
             Transactions::create([
                 'agent_id' => $validated['agent_id'],
+                'gambar' => $index === 0 ? $imageName : null,
                 'item_id' => $itemId,
                 'quantity' => $quantity,
                 'unit_price' => $unitPrice,
@@ -99,6 +110,9 @@ class TransactionController extends Controller
     public function destroy($id)
     {
         $transaction = Transactions::findOrFail($id);
+        if ($transaction->gambar) {
+            Storage::disk('public')->delete($transaction->gambar);
+        }
         $transaction->delete();
 
         return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dihapus.');
@@ -106,24 +120,20 @@ class TransactionController extends Controller
 
     public function show($id)
     {
-        $transaction = Transactions::with('agent', 'item.category')->findOrFail($id);
+        $transaction = Transactions::with(['agent', 'item.category'])->findOrFail($id);
         return view('transactions.show', compact('transaction'));
     }
 
-    
-public function saveImage(Request $request)
-{
-    $imageData = $request->input('image');
-    $imageName = 'transaction_' . time() . '.jpg';
-    $path = public_path('images/transactions/' . $imageName);
+    public function saveImage(Request $request)
+    {
+        $imageData = $request->input('image');
+        $imageName = 'transaction_' . time() . '.jpg';
+        $path = public_path('images/transactions/' . $imageName);
 
-    // Simpan gambar
-    $image = str_replace('data:image/jpeg;base64,', '', $imageData);
-    $image = str_replace(' ', '+', $image);
-    file_put_contents($path, base64_decode($image));
+        $image = str_replace('data:image/jpeg;base64,', '', $imageData);
+        $image = str_replace(' ', '+', $image);
+        file_put_contents($path, base64_decode($image));
 
-    // Kembalikan URL gambar
-    return response()->json(['url' => asset('images/transactions/' . $imageName)]);
-}
-
+        return response()->json(['url' => asset('images/transactions/' . $imageName)]);
+    }
 }

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1 class="text-center mb-4">Cek Barang</h1>
+    <h1 class="text-center mb-4">Kelola Barang</h1>
     <a href="{{ route('items.create') }}" class="btn mb-3" style="background-color: #9fb873; color: white; border-color: #9fb873;">Tambah Barang</a>
 
     @if (session('success'))

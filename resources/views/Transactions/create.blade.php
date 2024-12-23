@@ -4,9 +4,8 @@
 <div class="container">
     <h1 class="text-center mb-4">Tambah Transaksi</h1>
 
-    <form action="{{ route('transactions.storeMultiple') }}" method="POST">
+    <form action="{{ route('transactions.storeMultiple') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        
 
         <div class="mb-3">
             <label for="agent_id" class="form-label">Nama Agen</label>
@@ -23,6 +22,11 @@
                 <option value="cash">Cash</option>
                 <option value="transfer">Transfer</option>
             </select>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="gambar" class="form-label">Gambar</label>
+            <input type="file" name="gambar" class="form-control">
         </div>
 
         <div id="items-container">
@@ -48,12 +52,16 @@
                         <label for="discount[]" class="form-label">Diskon (%)</label>
                         <input type="number" class="form-control" name="discount[]" min="0" max="100">
                     </div>
-                    
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger remove-item">Hapus</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        
+        <div class="mb-3">
+            <button type="button" class="btn btn-success" id="add-item">Tambah Barang</button>
+        </div>
 
         <button type="submit" class="btn btn-primary">Simpan Transaksi</button>
         <a href="{{ route('transactions.index') }}" class="btn btn-secondary">Kembali</a>
@@ -66,23 +74,6 @@
     document.addEventListener('DOMContentLoaded', function () {
         const itemsContainer = document.getElementById('items-container');
         const addItemButton = document.getElementById('add-item');
-        const datetimeInput = document.getElementById('transaction_datetime');
-
-        // Set waktu pembelian otomatis (tanggal dan waktu sekarang)
-        function setDateTime() {
-            const now = new Date();
-            const formattedDatetime = now.toLocaleString('id-ID', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            datetimeInput.value = formattedDatetime;
-        }
-
-        setDateTime(); // Panggil saat halaman dimuat
 
         addItemButton.addEventListener('click', function () {
             const newRow = document.querySelector('.item-row').cloneNode(true);

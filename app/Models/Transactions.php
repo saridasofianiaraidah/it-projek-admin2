@@ -11,6 +11,7 @@ class Transactions extends Model
 
     protected $fillable = [
         'agent_id',
+        'gambar',
         'item_id',
         'quantity',
         'unit_price',
