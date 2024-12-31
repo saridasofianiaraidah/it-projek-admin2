@@ -38,3 +38,7 @@ Route::post('/categories/store', [CategoryController::class, 'store'])->name('ca
 
 // routes/web.php
 Route::post('/save-transaction-image', [TransactionController::class, 'saveImage'])->name('save.transaction.image');
+
+Route::get('/TokoYulia', function () {
+    return view('TokoYulia.index');
+});

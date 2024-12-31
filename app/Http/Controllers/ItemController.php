@@ -17,40 +17,16 @@ class ItemController extends Controller
         return view('items.index', compact('items'));
     }
 
-    // Menampilkan form pembuatan barang
     public function create()
-    {
-        $categories = Category::all(); // Ambil semua kategori
-        return view('items.create', compact('categories')); // Kirim data kategori ke view
-    }
+{
+    return redirect()->route('transactions.index')->with('error', 'Barang hanya bisa ditambahkan melalui transaksi.');
+}
 
-    // Menyimpan barang baru
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nama_barang' => 'required|string|max:255',
-            'harga' => 'required|numeric',
-            'jumlah' => 'required|integer',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'category_id' => 'required|exists:categories,id', // Validasi category_id
-        ]);
+public function store(Request $request)
+{
+    return redirect()->route('transactions.index')->with('error', 'Barang hanya bisa ditambahkan melalui transaksi.');
+}
 
-        $imageName = null;
-        if ($request->hasFile('gambar')) {
-            $imageName = time() . '.' . $request->gambar->extension();
-            $request->gambar->move(public_path('images'), $imageName);
-        }
-
-        Item::create([
-            'nama_barang' => $request->nama_barang,
-            'harga' => $request->harga,
-            'jumlah' => $request->jumlah,
-            'gambar' => $imageName,
-            'category_id' => $request->category_id, // Simpan category_id
-        ]);
-
-        return redirect()->route('items.index')->with('success', 'Barang berhasil ditambahkan.');
-    }
 
     // Menampilkan halaman edit barang
     public function edit(Item $item)

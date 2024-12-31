@@ -1,5 +1,3 @@
-<!-- resources/views/transactions/show.blade.php -->
-
 @extends('layouts.app')
 
 @section('content')
@@ -9,8 +7,8 @@
             Detail Transaksi
         </div>
         <div class="card-body">
-            <p><strong>Nama Agen:</strong> {{ $transaction->agent->nama }}</p>
-            <p><strong>Nama Barang:</strong> {{ $transaction->item->nama_barang }}</p>
+            <p><strong>Nama Agen:</strong> {{ $transaction->agent ? $transaction->agent->nama : 'N/A' }}</p>
+            <p><strong>Nama Barang:</strong> {{ $transaction->item ? $transaction->item->nama_barang : 'N/A' }}</p>
             <p><strong>Jumlah:</strong> {{ $transaction->quantity }}</p>
             <p><strong>Harga Satuan:</strong> Rp {{ number_format($transaction->unit_price, 0, ',', '.') }}</p>
             <p><strong>Diskon (%):</strong> {{ $transaction->discount }}%</p>
@@ -50,7 +48,7 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    const whatsappUrl = `https://api.whatsapp.com/send?text=Detail%20transaksi:%0A- Nama%20Agen:%20{{ urlencode($transaction->agent->nama) }}%0A- Nama%20Barang:%20{{ urlencode($transaction->item->nama_barang) }}%0A- Total%20Harga:%20Rp%20{{ number_format($transaction->total_price, 0, ',', '.') }}%0A%0AKlik%20tautan%20untuk%20melihat%20gambar:%0A${data.url}`;
+                    const whatsappUrl = `https://api.whatsapp.com/send?text=Detail%20transaksi:%0A- Nama%20Agen:%20{{ urlencode($transaction->agent->nama ?? 'N/A') }}%0A- Nama%20Barang:%20{{ urlencode($transaction->item->nama_barang ?? 'N/A') }}%0A- Total%20Harga:%20Rp%20{{ number_format($transaction->total_price, 0, ',', '.') }}%0A%0AKlik%20tautan%20untuk%20melihat%20gambar:%0A${data.url}`;
                     window.open(whatsappUrl, '_blank');
 
                     button.innerHTML = '<i class="fab fa-whatsapp"></i> Bagikan';

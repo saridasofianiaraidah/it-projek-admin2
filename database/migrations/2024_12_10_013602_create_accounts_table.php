@@ -1,20 +1,25 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up()
     {
-        if (Schema::hasTable('accounts')) { // Pastikan tabel ada
+        if (Schema::hasTable('accounts')) {
+            // If the table exists, just add the new columns
             Schema::table('accounts', function (Blueprint $table) {
                 $table->string('nama')->default('Unknown')->nullable();
                 $table->string('password', 255)->nullable();
                 $table->string('jabatan')->default('karyawan');
             });
         } else {
-            // Tambahkan fallback jika tabel tidak ada
+            // If the table does not exist, create it with required columns
             Schema::create('accounts', function (Blueprint $table) {
                 $table->id();
                 $table->string('email')->unique();
@@ -26,10 +31,19 @@ return new class extends Migration
         }
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down()
     {
-        Schema::table('accounts', function (Blueprint $table) {
-            $table->dropColumn(['nama', 'password', 'jabatan']);
-        });
+        if (Schema::hasTable('accounts')) {
+            Schema::table('accounts', function (Blueprint $table) {
+                // Remove columns if table exists
+                $table->dropColumn(['nama', 'password', 'jabatan']);
+            });
+        } else {
+            // If the table doesn't exist, there's no need to drop columns
+            Schema::dropIfExists('accounts');
+        }
     }
 };

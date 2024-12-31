@@ -9,29 +9,37 @@ class Transactions extends Model
 {
     use HasFactory;
 
+    // Kolom yang dapat diisi secara massal
     protected $fillable = [
         'agent_id',
-        'gambar',
-        'item_id',
-        'quantity',
+        'category_id',
+        'item_name',
+        'item_image',
+        'netto',
+        'unit',
         'unit_price',
+        'quantity',
         'discount',
+        'purchase_date',
         'total_price',
         'payment_method',
     ];
 
+    // Relasi dengan model Agent
     public function agent()
     {
-        return $this->belongsTo(Agent::class);
+        return $this->belongsTo(Agent::class, 'agent_id');
     }
 
-    public function item()
+    // Relasi dengan model Item (jika transaksi memiliki banyak barang)
+    public function items()
     {
-        return $this->belongsTo(Item::class);
+        return $this->hasMany(Item::class);
     }
-    public function category()
-{
-    return $this->belongsTo(Category::class);
-}
 
+    // Relasi dengan model Category
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
 }

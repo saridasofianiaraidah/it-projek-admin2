@@ -15,7 +15,7 @@
     <!-- Bootstrap Icons CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     
-    <!-- SweetAlert CSS -->
+    <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
     <!-- Custom CSS -->
@@ -180,12 +180,11 @@
                      class="rounded-circle mb-2" 
                      style="cursor: pointer;">
             </a>
-            
         </div>
 
         <!-- Sidebar Menu Items -->
         <ul class="menu-item">
-            <li><a href="items" class="{{ Request::is('items*') ? 'active' : '' }}"><i class="bi bi-box"></i> Kelola Barang</a></li>
+            <li><a href="items" class="{{ Request::is('items*') ? 'active' : '' }}"><i class="bi bi-box"></i> Cek Barang</a></li>
             <li><a href="agents" class="{{ Request::is('agents*') ? 'active' : '' }}"><i class="bi bi-people"></i> Agen</a></li>
             <li><a href="categories" class="{{ Request::is('categories*') ? 'active' : '' }}"><i class="bi bi-tag"></i> Kategori</a></li>
             <li><a href="transactions" class="{{ Request::is('transactions*') ? 'active' : '' }}"><i class="bi bi-basket"></i> Transaksi</a></li>
@@ -208,6 +207,39 @@
         </main>
     </div>
 
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
+    <!-- Show Pop-up based on session flash messages -->
+    <script>
+        // Check if there's a flash message for success, error, or warning
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Sukses!',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        @elseif(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: '{{ session('error') }}',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        @elseif(session('warning'))
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan!',
+                text: '{{ session('warning') }}',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        @endif
+    </script>
+    
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>

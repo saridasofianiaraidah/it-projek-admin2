@@ -10,13 +10,16 @@
     
     <style>
         body {
-            background: linear-gradient(135deg, #ffffff, #9fb873); /* Background gradient */
+            background: linear-gradient(135deg, #ffffff, #ffffff ); /* Background gradient */
         }
 
         .login-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
             width: 100%;
-            max-width: 600px; /* Memperbesar ukuran card */
-            margin: auto;
+            text-align: center;
         }
 
         .login-form {

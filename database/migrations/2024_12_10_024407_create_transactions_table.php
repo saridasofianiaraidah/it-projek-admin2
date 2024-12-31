@@ -6,36 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateTransactionsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('transactions', function (Blueprint $table) {
-            $table->id(); // Kolom id
-            $table->unsignedBigInteger('agent_id'); // Kolom agent_id
-            $table->string('gambar')->nullable();//menamplkan gambar
-            $table->unsignedBigInteger('item_id'); // Kolom item_id
-            $table->integer('quantity'); // Kolom quantity
-            $table->decimal('unit_price', 8, 2); // Kolom unit_price
-            $table->decimal('total_price', 10, 2); // Kolom total_price
-            $table->decimal('discount', 8, 2)->default(0); // Kolom discount dengan nilai default 0
-            $table->string('payment_method'); // Kolom payment_method
-            $table->timestamps(); // Kolom created_at dan updated_at
-            
-            // Menambahkan foreign key constraints
-            $table->foreign('agent_id')->references('id')->on('agents')->onDelete('cascade');
-            $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
+            $table->id();
+            $table->foreignId('agent_id')->constrained()->onDelete('cascade'); // Relasi ke tabel agents
+            $table->string('item_name');
+            $table->string('item_image')->nullable(); // File gambar, opsional
+            $table->decimal('netto', 10, 2); // Berat barang
+            $table->enum('unit', ['kg', 'g', 'mg', 'l']); // Satuan berat
+            $table->foreignId('category_id')->constrained()->onDelete('cascade'); // Relasi ke tabel categories
+            $table->decimal('unit_price', 10, 2); // Harga satuan
+            $table->integer('quantity'); // Jumlah barang
+            $table->decimal('discount', 10, 2)->nullable(); // Diskon, opsional
+            $table->decimal('total_price', 10, 2); // Total harga setelah diskon
+            $table->date('purchase_date'); // Tanggal pembelian
+            $table->enum('payment_method', ['cash', 'transfer']); // Metode pembayaran
+            $table->timestamps(); // Timestamps created_at dan updated_at
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('transactions');

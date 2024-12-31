@@ -5,11 +5,6 @@
     <h1 class="text-center mb-4">Kelola Agen</h1>
     <a href="{{ route('agents.create') }}" class="btn mb-3" style="background-color: #9fb873; color: white; border-color: #9fb873;">Tambah Agen</a>
     
-    @if (session('success'))
-        <div class="alert alert-success" id="success-alert">
-            {{ session('success') }}
-        </div>
-    @endif
 
     <div class="table-responsive">
         <table class="table table-bordered">

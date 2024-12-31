@@ -10,17 +10,29 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up()
-{
-    Schema::table('transactions', function (Blueprint $table) {
-        $table->dateTime('purchase_date')->nullable(); // Menambahkan kolom purchase_date
-    });
-}
+    {
+        if (Schema::hasTable('transactions')) {
+            Schema::table('transactions', function (Blueprint $table) {
+                if (!Schema::hasColumn('transactions', 'purchase_date')) {
+                    $table->dateTime('purchase_date')->nullable(); // Menambahkan kolom purchase_date
+                }
+            });
+        } else {
+            error_log('Tabel transactions tidak ditemukan. Pastikan migrasi yang membuat tabel ini sudah dijalankan.');
+        }
+    }
 
-public function down()
-{
-    Schema::table('transactions', function (Blueprint $table) {
-        $table->dropColumn('purchase_date'); // Menghapus kolom purchase_date saat rollback
-    });
-}
-
+    /**
+     * Reverse the migrations.
+     */
+    public function down()
+    {
+        if (Schema::hasTable('transactions')) {
+            Schema::table('transactions', function (Blueprint $table) {
+                if (Schema::hasColumn('transactions', 'purchase_date')) {
+                    $table->dropColumn('purchase_date'); // Menghapus kolom purchase_date saat rollback
+                }
+            });
+        }
+    }
 };

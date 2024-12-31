@@ -1,139 +1,82 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use App\Models\Agent;
-use App\Models\Item;
-use App\Models\Category;
 use App\Models\Transactions;
+use App\Models\Agent;
+use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
-    public function index()
-    {
-        $transactions = Transactions::with(['agent', 'item.category'])->get();
-        return view('transactions.index', compact('transactions'));
-    }
-
-    public function create()
-    {
-        $agents = Agent::all();
-        $items = Item::all();
-        $categories = Category::all();
-
-        return view('transactions.create', compact('agents', 'items', 'categories'));
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'agent_id' => 'required|exists:agents,id',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'item_id' => 'required|exists:items,id',
-            'category_id' => 'required|exists:categories,id',
-            'quantity' => 'required|integer|min:1',
-            'unit_price' => 'required|numeric|min:0',
-            'discount' => 'nullable|numeric|min:0|max:100',
-            'payment_method' => 'required|in:cash,transfer',
-        ]);
-
-        $totalPrice = $validated['quantity'] * $validated['unit_price'];
-        if (!empty($validated['discount'])) {
-            $totalPrice -= $totalPrice * ($validated['discount'] / 100);
-        }
-
-        $imageName = null;
-        if ($request->hasFile('gambar')) {
-            $imageName = $request->file('gambar')->store('transactions', 'public');
-        }
-
-        Transactions::create([
-            'agent_id' => $validated['agent_id'],
-            'gambar' => $imageName,
-            'item_id' => $validated['item_id'],
-            'category_id' => $validated['category_id'],
-            'quantity' => $validated['quantity'],
-            'unit_price' => $validated['unit_price'],
-            'discount' => $validated['discount'] ?? 0,
-            'total_price' => $totalPrice,
-            'payment_method' => $validated['payment_method'],
-            'purchase_date' => now(),
-        ]);
-
-        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil ditambahkan.');
-    }
-
-    public function storeMultiple(Request $request)
-    {
-        $validated = $request->validate([
-            'agent_id' => 'required|exists:agents,id',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'payment_method' => 'required|in:cash,transfer',
-            'item_id.*' => 'required|exists:items,id',
-            'quantity.*' => 'required|integer|min:1',
-            'unit_price.*' => 'required|numeric|min:0',
-            'discount.*' => 'nullable|numeric|min:0|max:100',
-        ]);
-
-        $imageName = null;
-        if ($request->hasFile('gambar')) {
-            $imageName = $request->file('gambar')->store('transactions', 'public');
-        }
-
-        foreach ($validated['item_id'] as $index => $itemId) {
-            $quantity = $validated['quantity'][$index];
-            $unitPrice = $validated['unit_price'][$index];
-            $discount = $validated['discount'][$index] ?? 0;
-
-            $totalPrice = $quantity * $unitPrice;
-            if ($discount > 0) {
-                $totalPrice -= $totalPrice * ($discount / 100);
-            }
-
-            Transactions::create([
-                'agent_id' => $validated['agent_id'],
-                'gambar' => $index === 0 ? $imageName : null,
-                'item_id' => $itemId,
-                'quantity' => $quantity,
-                'unit_price' => $unitPrice,
-                'discount' => $discount,
-                'total_price' => $totalPrice,
-                'payment_method' => $validated['payment_method'],
-                'purchase_date' => now(),
-            ]);
-        }
-
-        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil disimpan.');
-    }
-
-    public function destroy($id)
-    {
-        $transaction = Transactions::findOrFail($id);
-        if ($transaction->gambar) {
-            Storage::disk('public')->delete($transaction->gambar);
-        }
-        $transaction->delete();
-
-        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dihapus.');
-    }
-
+    // Menampilkan detail transaksi berdasarkan ID
     public function show($id)
     {
-        $transaction = Transactions::with(['agent', 'item.category'])->findOrFail($id);
+        $transaction = Transactions::with(['agent', 'category'])->findOrFail($id);
         return view('transactions.show', compact('transaction'));
     }
 
-    public function saveImage(Request $request)
+    // Halaman utama untuk daftar transaksi
+    public function index()
     {
-        $imageData = $request->input('image');
-        $imageName = 'transaction_' . time() . '.jpg';
-        $path = public_path('images/transactions/' . $imageName);
+        $transactions = Transactions::with(['agent', 'category'])->get(); // Mengambil transaksi dengan relasi agent dan category
+        return view('transactions.index', compact('transactions'));
+    }
 
-        $image = str_replace('data:image/jpeg;base64,', '', $imageData);
-        $image = str_replace(' ', '+', $image);
-        file_put_contents($path, base64_decode($image));
+    // Form untuk membuat transaksi baru
+    public function create()
+    {
+        $agents = Agent::all(); // Mengambil semua data agen
+        $categories = Category::all(); // Mengambil semua kategori
 
-        return response()->json(['url' => asset('images/transactions/' . $imageName)]);
+        return view('transactions.create', compact('agents', 'categories'));
+    }
+
+    // Menyimpan data transaksi baru
+    public function store(Request $request)
+    {
+        // Validasi data input
+        $validatedData = $request->validate([
+            'agent_id' => 'required|exists:agents,id',
+            'item_name' => 'required|string|max:255',
+            'item_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'netto' => 'required|numeric|min:0',
+            'unit' => 'required|string|max:10',
+            'category_id' => 'required|exists:categories,id',
+            'unit_price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:1',
+            'discount' => 'nullable|numeric|min:0|max:100',
+            'purchase_date' => 'required|date',
+            'payment_method' => 'required|string|in:cash,transfer',
+        ]);        
+
+        try {
+            // Proses upload gambar barang (jika ada)
+            if ($request->hasFile('item_image')) {
+                $fileName = time() . '_' . $request->file('item_image')->getClientOriginalName();
+                $filePath = $request->file('item_image')->storeAs('uploads/items', $fileName, 'public');
+                $validatedData['item_image'] = $filePath;
+            }
+
+            // Hitung total harga setelah diskon
+            $totalPrice = ($validatedData['unit_price'] * $validatedData['quantity']) 
+            * (1 - (($validatedData['discount'] ?? 0) / 100));
+
+            // Tambahkan total harga ke data validasi
+            $validatedData['total_price'] = $totalPrice;
+
+            // Simpan data ke database
+            Transactions::create($validatedData);
+
+            // Redirect ke halaman transaksi dengan pesan sukses
+            return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            // Log error untuk debugging
+            Log::error('Error storing transaction:', ['error' => $e->getMessage()]);
+
+            // Redirect kembali dengan pesan error
+            return redirect()->back()->withErrors(['message' => 'Gagal menyimpan transaksi, silakan coba lagi.']);
+        }
     }
 }

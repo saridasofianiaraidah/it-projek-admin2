@@ -4,12 +4,7 @@
 <div class="container">
     <h1 class="text-center mb-4">Kelola Kategori</h1>
     <a href="{{ route('categories.create') }}" class="btn mb-3" style="background-color: #9fb873; color: white; border-color: #9fb873;">Tambah Kategori</a>
-    
-    @if (session('success'))
-        <div class="alert alert-success" id="success-alert">
-            {{ session('success') }}
-        </div>
-    @endif
+
 
     <div class="table-responsive">
         <table class="table table-striped table-bordered">

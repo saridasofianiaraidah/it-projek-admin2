@@ -11,8 +11,11 @@ return new class extends Migration
     public function up()
 {
     Schema::table('items', function (Blueprint $table) {
-        $table->dropColumn('kategori');
+        if (Schema::hasColumn('items', 'kategori')) {
+            $table->dropColumn('kategori');
+        }
     });
+    
 }
 
 public function down()
