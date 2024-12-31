@@ -113,6 +113,21 @@
                 successModal.show();
             @endif
         });
+
+        <script>
+    window.onload = function() {
+        var alert = document.getElementById('success-alert');
+        if (alert) {
+            setTimeout(function() {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 500);
+            }, 5000);
+        }
+    };
+</script>
     </script>
     
 </body>

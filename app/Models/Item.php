@@ -15,6 +15,8 @@ class Item extends Model
         'jumlah',
         'gambar',
         'category_id',
+        'netto',
+        'unit',
     ];
 
     public function category()
