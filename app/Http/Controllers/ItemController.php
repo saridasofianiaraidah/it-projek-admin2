@@ -5,81 +5,105 @@ namespace App\Http\Controllers;
 use App\Models\Item;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ItemController extends Controller
 {
-
-
-    // Menampilkan daftar barang
+    // Menampilkan daftar item
     public function index()
     {
-        $items = Item::with('category')->get(); // Ambil barang dengan relasi kategori
+        $items = Item::with('category')->get();
         return view('items.index', compact('items'));
     }
 
+    // Menampilkan form untuk membuat item baru
     public function create()
-{
-    return redirect()->route('transactions.index')->with('error', 'Barang hanya bisa ditambahkan melalui transaksi.');
-}
-
-public function store(Request $request)
-{
-    return redirect()->route('transactions.index')->with('error', 'Barang hanya bisa ditambahkan melalui transaksi.');
-}
-
-
-    // Menampilkan halaman edit barang
-    public function edit(Item $item)
     {
-        $categories = Category::all(); // Ambil semua kategori
+        $categories = Category::all();
+        return view('items.create', compact('categories'));
+    }
+
+    // Menyimpan item baru ke database
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'nama_barang' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'harga' => 'required|numeric|min:0',
+            'jumlah' => 'required|integer|min:1',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'netto' => 'required|numeric|min:0',
+            'unit' => 'required|string|in:kg,g,mg,l',
+        ]);
+
+        try {
+            // Proses upload gambar jika ada
+            if ($request->hasFile('gambar')) {
+                $fileName = time() . '_' . $request->file('gambar')->getClientOriginalName();
+                $filePath = $request->file('gambar')->storeAs('uploads/items', $fileName, 'public');
+                $validatedData['gambar'] = $filePath;
+            }
+
+            Item::create($validatedData);
+
+            return redirect()->route('items.index')->with('success', 'Item berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            Log::error('Error creating item:', ['error' => $e->getMessage()]);
+            return redirect()->back()->withErrors(['message' => 'Gagal menambahkan item, silakan coba lagi.']);
+        }
+    }
+
+    // Menampilkan form untuk mengedit item
+    public function edit($id)
+    {
+        $item = Item::findOrFail($id);
+        $categories = Category::all();
         return view('items.edit', compact('item', 'categories'));
     }
 
-    // Memperbarui barang
-    public function update(Request $request, Item $item)
+    // Memperbarui item di database
+    public function update(Request $request, $id)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'nama_barang' => 'required|string|max:255',
-            'harga' => 'required|numeric',
-            'jumlah' => 'required|integer',
+            'category_id' => 'required|exists:categories,id',
+            'harga' => 'required|numeric|min:0',
+            'jumlah' => 'required|integer|min:1',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'category_id' => 'required|exists:categories,id', // Validasi category_id
+            'netto' => 'required|numeric|min:0',
+            'unit' => 'required|string|in:kg,g,mg,l',
         ]);
 
-        if ($request->hasFile('gambar')) {
-            if ($item->gambar) {
-                $oldImagePath = public_path('images/' . $item->gambar);
-                if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath);
-                }
+        try {
+            $item = Item::findOrFail($id);
+
+            // Proses upload gambar jika ada
+            if ($request->hasFile('gambar')) {
+                $fileName = time() . '_' . $request->file('gambar')->getClientOriginalName();
+                $filePath = $request->file('gambar')->storeAs('uploads/items', $fileName, 'public');
+                $validatedData['gambar'] = $filePath;
             }
-            $imageName = time() . '.' . $request->gambar->extension();
-            $request->gambar->move(public_path('images'), $imageName);
-            $item->gambar = $imageName;
+
+            $item->update($validatedData);
+
+            return redirect()->route('items.index')->with('success', 'Item berhasil diperbarui.');
+        } catch (\Exception $e) {
+            Log::error('Error updating item:', ['error' => $e->getMessage()]);
+            return redirect()->back()->withErrors(['message' => 'Gagal memperbarui item, silakan coba lagi.']);
         }
-
-        $item->update([
-            'nama_barang' => $request->nama_barang,
-            'harga' => $request->harga,
-            'jumlah' => $request->jumlah,
-            'category_id' => $request->category_id,
-        ]);
-
-        return redirect()->route('items.index')->with('success', 'Barang berhasil diperbarui.');
     }
 
-    // Menghapus barang
-    public function destroy(Item $item)
+    // Menghapus item dari database
+    public function destroy($id)
     {
-        if ($item->gambar) {
-            $oldImagePath = public_path('images/' . $item->gambar);
-            if (file_exists($oldImagePath)) {
-                unlink($oldImagePath);
-            }
+        try {
+            $item = Item::findOrFail($id);
+            $item->delete();
+
+            return redirect()->route('items.index')->with('success', 'Item berhasil dihapus.');
+        } catch (\Exception $e) {
+            Log::error('Error deleting item:', ['error' => $e->getMessage()]);
+            return redirect()->back()->withErrors(['message' => 'Gagal menghapus item, silakan coba lagi.']);
         }
-
-        $item->delete();
-
-        return redirect()->route('items.index')->with('success', 'Barang berhasil dihapus.');
     }
 }

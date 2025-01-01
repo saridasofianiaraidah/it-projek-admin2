@@ -84,8 +84,11 @@
         <div class="brand">Toko Yulia</div>
         <div class="links">
         </div>
-    </div>
-
+    </div><center>
+    <div>
+    <h1>SELAMAT DATANG DI TOKO YULIA</h1>
+    <h2>Pilih sebagai:</h2>
+    </div></center>
     <div class="container">
         <a href="pemilik.html" class="button">Pemilik</a>
         <a href="http://it-projek-admin.test/login" class="button">Admin</a>

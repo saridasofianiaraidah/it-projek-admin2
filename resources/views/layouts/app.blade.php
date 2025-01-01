@@ -175,7 +175,7 @@
         <!-- Profile Section -->
         <div class="profile-section">
             <a href="{{ route('profil') }}">
-                <img src="https://www.mediarale.com/wp-content/uploads/2022/11/Compress_20221106_185806_6073.jpg" 
+                <img src="https://png.pngtree.com/png-vector/20230320/ourlarge/pngtree-neon-shopping-cart-icon-for-supermarket-advertising-background-flyer-purchase-vector-png-image_50959812.jpg" 
                      alt="Profile" 
                      class="rounded-circle mb-2" 
                      style="cursor: pointer;">
@@ -193,7 +193,7 @@
         </ul>
 
         <!-- Logout Button -->
-        <a href="/login" class="btn btn-danger d-block mt-auto">Keluar</a>
+        <a href="TokoYulia" class="btn btn-danger d-block mt-auto">Keluar</a>
     </div>
 
     <!-- Main Content -->

@@ -42,7 +42,7 @@ class TransactionController extends Controller
             'item_name' => 'required|string|max:255',
             'item_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'netto' => 'required|numeric|min:0',
-            'unit' => 'required|string|max:10',
+            'unit' => 'required|in:kg,g,mg,l',
             'category_id' => 'required|exists:categories,id',
             'unit_price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',

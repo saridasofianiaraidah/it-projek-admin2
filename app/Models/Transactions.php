@@ -5,41 +5,35 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Transactions extends Model
+class Transactions extends Model // Ubah nama menjadi singular "Transaction"
 {
     use HasFactory;
 
-    // Kolom yang dapat diisi secara massal
+    // Mass assignable attributes
     protected $fillable = [
         'agent_id',
-        'category_id',
         'item_name',
         'item_image',
         'netto',
         'unit',
+        'category_id',
         'unit_price',
         'quantity',
         'discount',
-        'purchase_date',
         'total_price',
+        'purchase_date',
         'payment_method',
     ];
 
-    // Relasi dengan model Agent
+    // Relasi ke model Agent
     public function agent()
     {
-        return $this->belongsTo(Agent::class, 'agent_id');
+        return $this->belongsTo(Agent::class);
     }
 
-    // Relasi dengan model Item (jika transaksi memiliki banyak barang)
-    public function items()
-    {
-        return $this->hasMany(Item::class);
-    }
-
-    // Relasi dengan model Category
+    // Relasi ke model Category
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class);
     }
 }

@@ -12,6 +12,8 @@ class CreateItemsTable extends Migration
             $table->id();
             $table->string('nama_barang');
             $table->unsignedBigInteger('category_id');
+            $table->decimal('netto', 10, 2); // Berat barang
+            $table->enum('unit', ['kg', 'g', 'mg', 'l']); // Satuan berat
             $table->decimal('harga', 10, 2);
             $table->integer('jumlah');
             $table->string('gambar')->nullable();

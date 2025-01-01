@@ -51,6 +51,10 @@
         <label for="discount">Diskon</label>
         <input type="number" name="discount" class="form-control" id="discount">
     </div>
+    <div class="mb-3">
+        <label for="total_price">Total Harga</label>
+        <input type="text" name="total_price" class="form-control" id="total_price" readonly>
+    </div>
     
     <div class="mb-3">
         <label for="purchase_date">Tanggal Pembelian</label>
@@ -94,6 +98,20 @@
 
         // Set date and time on page load
         setDateTime();
-    });
+
+    function calculateTotalPrice() {
+        const unitPrice = parseFloat(unitPriceInput.value) || 0;
+        const quantity = parseInt(quantityInput.value) || 0;
+        const discount = parseFloat(discountInput.value) || 0;
+
+        const total = (unitPrice * quantity) * (1 - (discount / 100));
+        totalPriceInput.value = total.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
+    }
+
+    unitPriceInput.addEventListener('input', calculateTotalPrice);
+    quantityInput.addEventListener('input', calculateTotalPrice);
+    discountInput.addEventListener('input', calculateTotalPrice);
+});
+
 </script>
 @endsection
