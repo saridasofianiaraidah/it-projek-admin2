@@ -4,75 +4,72 @@
 <h1>Tambah Transaksi</h1>
 <form action="{{ route('transactions.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
-    <div class="mb-3">
-        <label for="agent_id" class="form-label">Nama Agen</label>
-        <select class="form-control" id="agent_id" name="agent_id" required>
+    <div>
+        <label for="agent_id">Agen</label>
+        <select name="agent_id" id="agent_id" required>
             @foreach($agents as $agent)
-                <option value="{{ $agent->id }}">{{ $agent->nama }}</option>
+                <option value="{{ $agent->id }}">{{ $agent->name }}</option>
             @endforeach
         </select>
-    </div>   
-    <div class="mb-3">
+    </div>
+    <div>
         <label for="item_name">Nama Barang</label>
-        <input type="text" name="item_name" class="form-control" required>
+        <input type="text" name="item_name" id="item_name" required>
     </div>
-    <div class="mb-3">
+    <div>
         <label for="item_image">Gambar Barang</label>
-        <input type="file" name="item_image" class="form-control">
+        <input type="file" name="item_image" id="item_image">
     </div>
-    <div class="mb-3 d-flex">
-        <label for="netto" class="mr-2">Netto (berat)</label>
-        <input type="number" id="netto" name="netto" class="form-control" step="0.01" placeholder="Masukkan berat barang" required>
-        <select name="unit" class="form-control ml-2" required>
-            <option value="kg">Kg</option>
-            <option value="g">g</option>
-            <option value="mg">mg</option> <!-- Corrected option -->
-            <option value="l">L</option>  <!-- Corrected option -->
-        </select>
-    </div>
-    <div class="mb-3">
-        <label for="category_id">Kategori</label>
-        <select name="category_id" class="form-control" required>
-            <option value="">Pilih Kategori</option>
-            @foreach($categories as $category)
-            <option value="{{ $category->id }}">{{ $category->name }}</option>
-            @endforeach
-        </select>
-    </div>
-    <div class="mb-3">
-        <label for="unit_price">Harga Satuan</label>
-        <input type="number" name="unit_price" class="form-control" id="unit_price" required>
-    </div>
-    <div class="mb-3">
-        <label for="quantity">Jumlah</label>
-        <input type="number" name="quantity" class="form-control" id="quantity" required>
-    </div>
-    <div class="mb-3">
-        <label for="discount">Diskon</label>
-        <input type="number" name="discount" class="form-control" id="discount">
-    </div>
-    <div class="mb-3">
-        <label for="total_price">Total Harga</label>
-        <input type="text" name="total_price" class="form-control" id="total_price" readonly>
+    <div class="form-group">
+        <label for="netto">Netto (Berat):</label>
+        <input type="number" step="any" name="netto" id="netto" class="form-control" required>
     </div>
     
-    <div class="mb-3">
-        <label for="purchase_date">Tanggal Pembelian</label>
-        <input type="text" id="purchase_date" name="purchase_date" class="form-control" readonly required>
-    </div>
-    <div class="mb-3">
-        <label for="payment_method">Metode Pembayaran</label>
-        <select name="payment_method" class="form-control" required>
-            <option value="">Pilih Metode Pembayaran</option>
-            <option value="cash">Cash</option>
-            <option value="bank_transfer">Transfer</option>
+    <div>
+        <label for="unit">Satuan</label>
+        <select name="unit" id="unit" required>
+            <option value="kg">Kilogram</option>
+            <option value="g">Gram</option>
+            <option value="mg">Miligram</option>
+            <option value="l">Liter</option>
         </select>
     </div>
-    <button type="submit" class="btn btn-primary">Simpan</button>
-    <a href="{{ route('transactions.index') }}" class="btn btn-secondary">Kembali</a>
+    <div>
+        <label for="category_id">Kategori</label>
+        <select name="category_id" id="category_id" required>
+            @foreach($categories as $category)
+                <option value="{{ $category->id }}">{{ $category->name }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div>
+        <label for="unit_price">Harga Satuan</label>
+        <input type="number" name="unit_price" id="unit_price" required>
+    </div>
+    <div>
+        <label for="quantity">jumlah</label>
+        <input type="number" name="quantity" id="quantity" required>
+    </div>
+    <div>
+        <label for="discount">Diskon (%)</label>
+        <input type="number" name="discount" id="discount">
+    </div>
+    <div>
+        <label for="purchase_date">Tanggal Pembelian</label>
+        <input type="date" name="purchase_date" id="purchase_date" required>
+    </div>
+    <div>
+        <label for="payment_method">Metode Pembayaran</label>
+        <select name="payment_method" id="payment_method" required>
+            <option value="cash">Tunai</option>
+            <option value="bank_transfer">Transfer Bank</option>
+        </select>
+    </div>
+    <button type="submit">Simpan</button>
 </form>
-</div>
+
 @endsection
+
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -80,38 +77,31 @@
         const unitPriceInput = document.getElementById('unit_price');
         const quantityInput = document.getElementById('quantity');
         const discountInput = document.getElementById('discount');
+        const totalPriceInput = document.getElementById('total_price');
 
-        // Set tanggal dan waktu pembelian otomatis (tanggal dan waktu sekarang)
-        function setDateTime() {
-            const now = new Date();
-            const formattedDatetime = now.toLocaleString('id-ID', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            }).replace(', ', ' '); // Untuk format dd-mm-yyyy hh:mm:ss
+        // Atur tanggal pembelian default ke sekarang
+        const now = new Date();
+        const formattedDatetime = now.toISOString().slice(0, 19).replace('T', ' ');
+        datetimeInput.value = formattedDatetime;
 
-            datetimeInput.value = formattedDatetime;
+        // Hitung total harga
+        function calculateTotalPrice() {
+            const unitPrice = parseFloat(unitPriceInput.value) || 0;
+            const quantity = parseInt(quantityInput.value) || 0;
+            const discount = parseFloat(discountInput.value) || 0;
+
+            const total = (unitPrice * quantity) * (1 - (discount / 100));
+            totalPriceInput.value = total.toFixed(2);
         }
 
-        // Set date and time on page load
-        setDateTime();
+        unitPriceInput.addEventListener('input', calculateTotalPrice);
+        quantityInput.addEventListener('input', calculateTotalPrice);
+        discountInput.addEventListener('input', calculateTotalPrice);
 
-    function calculateTotalPrice() {
-        const unitPrice = parseFloat(unitPriceInput.value) || 0;
-        const quantity = parseInt(quantityInput.value) || 0;
-        const discount = parseFloat(discountInput.value) || 0;
-
-        const total = (unitPrice * quantity) * (1 - (discount / 100));
-        totalPriceInput.value = total.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
-    }
-
-    unitPriceInput.addEventListener('input', calculateTotalPrice);
-    quantityInput.addEventListener('input', calculateTotalPrice);
-    discountInput.addEventListener('input', calculateTotalPrice);
-});
-
+        // Debug input form
+        document.getElementById('transactionForm').addEventListener('submit', function (e) {
+            console.log('Form submitted with values:', new FormData(this));
+        });
+    });
 </script>
 @endsection

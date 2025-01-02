@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Transactions extends Model // Ubah nama menjadi singular "Transaction"
+class Transaction extends Model
 {
     use HasFactory;
 
-    // Mass assignable attributes
     protected $fillable = [
         'agent_id',
         'item_name',
@@ -25,15 +24,19 @@ class Transactions extends Model // Ubah nama menjadi singular "Transaction"
         'payment_method',
     ];
 
-    // Relasi ke model Agent
     public function agent()
     {
         return $this->belongsTo(Agent::class);
     }
 
-    // Relasi ke model Category
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
+    public function items()
+{
+    return $this->belongsToMany(Item::class, 'transaction_item', 'transaction_id', 'item_id')
+                ->withPivot('quantity', 'unit_price', 'total_price');
 }
+}
+

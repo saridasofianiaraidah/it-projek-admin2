@@ -30,6 +30,8 @@
                      alt="{{ $transaction->item_name }}" 
                      width="50">
             </td>
+            <td>{{ $transaction->netto ?? 'Tidak ada data berat' }}</td>
+
             <td>{{ $transaction->category->name ?? 'Tidak ada kategori' }}</td>
             <td>Rp {{ number_format($transaction->unit_price, 0, ',', '.') }}</td>
             <td>{{ $transaction->quantity }}</td>

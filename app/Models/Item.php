@@ -24,8 +24,11 @@ class Item extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function transactions()
-    {
-        return $this->hasMany(Transactions::class);
-    }
+    // Model Item.php
+public function transactions()
+{
+    return $this->belongsToMany(Transaction::class, 'transaction_item', 'item_id', 'transaction_id')
+                ->withPivot('quantity', 'unit_price', 'total_price');
+}
+
 }

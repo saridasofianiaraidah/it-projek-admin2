@@ -10,18 +10,16 @@ use Illuminate\Support\Facades\Log;
 class ItemController extends Controller
 {
     // Menampilkan daftar item
-    public function index()
-    {
-        $items = Item::with('category')->get();
-        return view('items.index', compact('items'));
-    }
+    // Controller untuk Item
+public function index()
+{
+    // Mengambil data item yang terkait dengan transaksi tertentu (misalnya transaksi dengan ID tertentu)
+    $items = Item::with('transactions')->get(); // Ambil semua item dengan transaksi terkait
 
-    // Menampilkan form untuk membuat item baru
-    public function create()
-    {
-        $categories = Category::all();
-        return view('items.create', compact('categories'));
-    }
+    return view('items.index', compact('items'));
+}
+
+
 
     // Menyimpan item baru ke database
     public function store(Request $request)

@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,20 +10,18 @@ class CreateItemsTable extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->id();
             $table->string('nama_barang');
-            $table->unsignedBigInteger('category_id');
-            $table->decimal('netto', 10, 2); // Berat barang
-            $table->enum('unit', ['kg', 'g', 'mg', 'l']); // Satuan berat
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->decimal('harga', 10, 2);
             $table->integer('jumlah');
             $table->string('gambar')->nullable();
+            $table->decimal('netto', 10, 2);
+            $table->string('unit');
             $table->timestamps();
-
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('items');
+        Schema::dropIfExists('item_transaction');
     }
 }
