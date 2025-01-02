@@ -6,9 +6,11 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AgentController;
+use App\Http\Controllers\ControllerLaporan;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionItemController;
+use App\Models\ModelLaporan;
 
 // Rute untuk login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -27,7 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('items', ItemController::class);
     Route::resource('categories', CategoryController::class);
     Route::resource('agents', AgentController::class);
-
+    Route::get('/laporan', [ControllerLaporan::class, 'index']);
     // Route untuk transaksi dan item terkait
     Route::resource('transactions', TransactionController::class);
     Route::get('/transactions/{transaction}/items', [TransactionController::class, 'index'])->name('transactions.items.index');

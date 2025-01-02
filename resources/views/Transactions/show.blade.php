@@ -24,7 +24,7 @@
                     <li class="list-group-item"><strong>Netto (Berat):</strong> {{ $transaction->netto ?? 'Tidak ada data berat' }} kg</li>
                     <li class="list-group-item"><strong>Harga Satuan:</strong> Rp {{ number_format($transaction->unit_price, 0, ',', '.') }}</li>
                     <li class="list-group-item"><strong>Jumlah:</strong> {{ $transaction->quantity }}</li>
-                    <li class="list-group-item"><strong>Diskon:</strong> {{ $transaction->discount }}%</li>
+                    <li class="list-group-item"><strong>Diskon:</strong> {{ $transaction->discount ?? 0 }}%</li>
                     <li class="list-group-item"><strong>Total Harga:</strong> Rp {{ number_format($transaction->total_price, 0, ',', '.') }}</li>
                     <li class="list-group-item"><strong>Total Setelah Diskon:</strong> Rp {{ number_format($transaction->total_price * (1 - ($transaction->discount / 100)), 0, ',', '.') }}</li>
                     <li class="list-group-item"><strong>Tanggal Pembelian:</strong> {{ \Carbon\Carbon::parse($transaction->purchase_date)->format('d-m-Y') }}</li>
@@ -66,7 +66,7 @@
             link.click(); // Melakukan unduhan
 
             // Setelah unduhan selesai, arahkan pengguna ke WhatsApp
-            const whatsappUrl = `https://api.whatsapp.com/send?text=Detail%20Transaksi:%0A- Nama%20Agen:%20{{ urlencode($transaction->agent->nama ?? 'N/A') }}%0A- Nama%20Barang:%20{{ urlencode($transaction->item_name ?? 'N/A') }}%0A- Total%20Harga:%20Rp%20{{ number_format($transaction->total_price, 0, ',', '.') }}%0A%0A`;
+            const whatsappUrl = `https://api.whatsapp.com/send?text=Detail%20Transaksi:%0A- Nama%20Agen:%20{{ urlencode($transaction->agent->nama ?? 'N/A') }}%0A- Nama%20Barang:%20{{ urlencode($transaction->item_name ?? 'N/A') }}%0A- Total%20Harga:%20Rp%20{{ number_format($transaction->total_price, 0, ',', '.') }}%0A`;
             window.open(whatsappUrl, '_blank'); // Membuka WhatsApp dengan pesan
 
             // Reset tombol setelah selesai

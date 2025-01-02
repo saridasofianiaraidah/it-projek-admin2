@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
@@ -10,15 +11,12 @@ use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller
 {
-    public function index($transactionId)
+    // Tampilkan daftar transaksi
+    public function index()
     {
-        // Ambil transaksi beserta item terkait
-        $transaction = Transaction::with('items')->findOrFail($transactionId);
-
-        // Kirim data ke view
-        return view('transactions.items.index', compact('transaction'));
+        $transactions = Transaction::with(['agent', 'category'])->get();
+        return view('transactions.index', compact('transactions'));
     }
-
 
     // Tampilkan form tambah transaksi
     public function create()
@@ -31,15 +29,16 @@ class TransactionController extends Controller
 
     // Tampilkan detail transaksi
     public function show($id)
-    {
-        try {
-            $transaction = Transaction::with(['agent', 'category', 'items'])->findOrFail($id);
-            return view('transactions.show', compact('transaction'));
-        } catch (\Exception $e) {
-            Log::error('Error fetching transaction:', ['error' => $e->getMessage()]);
-            return redirect()->route('transactions.index')->withErrors(['message' => 'Transaksi tidak ditemukan.']);
-        }
+{
+    try {
+        $transaction = Transaction::with(['agent', 'category'])->findOrFail($id);
+        return view('transactions.show', compact('transaction'));
+    } catch (\Exception $e) {
+        Log::error('Error fetching transaction:', ['error' => $e->getMessage()]);
+        return redirect()->route('transactions.index')->withErrors(['message' => 'Transaksi tidak ditemukan.']);
     }
+}
+
 
     // Simpan transaksi baru
     public function store(Request $request)
@@ -59,12 +58,12 @@ class TransactionController extends Controller
         ]);
 
         try {
-            // Jika ada file gambar
+            // Jika ada file gambar, simpan
             if ($request->hasFile('item_image')) {
                 $validatedData['item_image'] = $request->file('item_image')->store('images', 'public');
             }
 
-            // Hitung total harga, periksa apakah diskon ada
+            // Hitung total harga
             $discount = $validatedData['discount'] ?? 0;
             $validatedData['total_price'] = ($validatedData['unit_price'] * $validatedData['quantity']) * (1 - ($discount / 100));
 
